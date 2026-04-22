@@ -1,0 +1,83 @@
+{
+  "links": {
+    "whatsapp": "https://wa.me/5511949312737?text=Ol%C3%A1,%20gostaria%20de%20assinar%20a%20Novanet!",
+    "portalWeb": "https://novanetfibra.beesweb.app/home",
+    "instagram": "https://instagram.com/novanetfibra",
+    "facebook": "https://facebook.com/novanetfibra"
+  },
+  "planos": [
+    {
+      "nome": "Essencial",
+      "velocidade": "100",
+      "unidade": "Megas",
+      "descricao": "Performance confiável para a rotina diária, estudos e streaming em Full HD.",
+      "precoReais": "69",
+      "precoCentavos": "99",
+      "destaque": false,
+      "cor": "nova-accent",
+      "beneficios": [
+        "Roteador Comodato Gratuito",
+        "Download Ilimitado",
+	"Suporte Especializado",
+	"100% Fibra Óptica"
+      ],
+      "linkAssinar": "https://wa.me/5511949312737?text=Quero%20o%20plano%20de%20100%20megas"
+    },
+    {
+      "nome": "Avançado",
+      "velocidade": "300",
+      "unidade": "Megas",
+      "descricao": "A escolha inteligente para trabalho remoto intensivo e entretenimento em 4K.",
+      "precoReais": "89",
+      "precoCentavos": "99",
+      "destaque": true,
+      "cor": "nova-accent",
+      "beneficios": [
+        "Roteador Comodato Gratuito",
+        "Latência Otimizada",
+	"Suporte Especializado",
+	"100% Fibra Óptica"
+      ],
+      "linkAssinar": "https://wa.me/5511949312737?text=Quero%20o%20plano%20de%20300%20megas"
+    },
+    {
+      "nome": "Premium",
+      "velocidade": "600",
+      "unidade": "Megas",
+      "descricao": "Para ambientes hiperconectados, automação residencial e downloads imediatos.",
+      "precoReais": "99",
+      "precoCentavos": "99",
+      "destaque": false,
+      "cor": "nova-orange",
+      "beneficios": [
+        "Roteador Comodato Gratuito",
+        "Latência Ultrabaixa",
+	"Suporte Especializado",
+	"100% Fibra Óptica"
+      ],
+      "linkAssinar": "https://wa.me/5511949312737?text=Quero%20o%20plano%20de%20600%20megas"
+    }
+  ],
+  "cobertura": [
+    {
+      "cidade": "Brasilândia",
+      "descricao": "Jd. Brasília, Pq. Brasilândia e região",
+      "cor": "nova-accent"
+    },
+    {
+      "cidade": "Vila Souza",
+      "descricao": "Damasceno, Jd. Carumbé e região",
+      "cor": "nova-orange"
+    },
+    {
+      "cidade": "Canta Galo",
+      "descricao": "Jd. Maggie, Jd. Sydney e região",
+      "cor": "nova-accent"
+    },
+    {
+      "cidade": "Pirituba",
+      "descricao": "Consultar regiões",
+      "cor": "nova-orange"
+    }
+  ]
+}

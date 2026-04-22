@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novanet Fibra | Internet Sem Limites</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config & Custom CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        'nova-dark': '#09090b',
+                        'nova-accent': '#06B6D4', // Ciano do logo
+                        'nova-orange': '#F97316', // Laranja do logo
+                        'nova-surface': '#18181b',
+                    },
+                    animation: {
+                        'marquee': 'marquee 15s linear infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Previne o scroll horizontal sem quebrar a fluidez no mobile */
+        html, body {
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+        }
+
+        /* O filtro de ruído foi movido para uma camada fixa no fundo. 
+           Isso impede que o celular re-renderize a textura durante o scroll, eliminando os travamentos. */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Elementos com estética tech/moderna, substituindo o brutalismo */
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .neon-glow:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Ocultar barra de rolagem mas manter funcionalidade */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #06B6D4;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-nova-accent selection:text-nova-dark">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-nova-dark/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="switchView('home')">
+                    <img src="https://novanetfibra.com.br/assets/logo.png" alt="Novanet Fibra" class="h-8 md:h-10 w-auto object-contain">
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center font-medium text-sm text-zinc-300">
+                    <a href="#planos" onclick="switchView('home', 'planos'); return false;" class="hover:text-nova-accent transition-colors">Planos</a>
+                    <a href="#vantagens" onclick="switchView('home', 'vantagens'); return false;" class="hover:text-nova-accent transition-colors">Vantagens</a>
+                    <a href="#cobertura" onclick="switchView('home', 'cobertura'); return false;" class="hover:text-nova-accent transition-colors">Cobertura</a>
+                    <a href="#" onclick="switchView('status'); return false;" class="hover:text-nova-accent transition-colors text-nova-accent">Status da Rede</a>
+                    <a href="#faq" onclick="switchView('home', 'faq'); return false;" class="hover:text-nova-accent transition-colors">FAQ</a>
+                    <a href="https://novanetfibra.beesweb.app/home" class="flex items-center gap-2 hover:text-white transition-colors">
+                        <i class="ph ph-user"></i> Área do Cliente
+                    </a>
+                    <a href="#planos" onclick="switchView('home', 'planos'); return false;" class="bg-white text-nova-dark px-6 py-2 rounded-full font-bold hover:bg-nova-accent transition-all neon-glow">
+                        Assine Já
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-nova-accent text-3xl">
+                        <i class="ph ph-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-nova-surface border-b border-white/10 absolute w-full left-0">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center font-medium">
+                <a href="#planos" onclick="switchView('home', 'planos'); return false;" class="block px-3 py-4 hover:bg-white/5 hover:text-nova-accent">Planos</a>
+                <a href="#vantagens" onclick="switchView('home', 'vantagens'); return false;" class="block px-3 py-4 hover:bg-white/5 hover:text-nova-accent">Vantagens</a>
+                <a href="#cobertura" onclick="switchView('home', 'cobertura'); return false;" class="block px-3 py-4 hover:bg-white/5 hover:text-nova-accent">Cobertura</a>
+                <a href="#" onclick="switchView('status'); return false;" class="block px-3 py-4 hover:bg-white/5 hover:text-nova-accent text-nova-accent">Status da Rede</a>
+                <a href="#faq" onclick="switchView('home', 'faq'); return false;" class="block px-3 py-4 hover:bg-white/5 hover:text-nova-accent">FAQ</a>
+                <a href="#" class="block px-3 py-4 bg-white/5 text-nova-accent">Área do Cliente</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- VIEWS CONTAINER -->
+    <main>
+        
+        <!-- ==================== VIEW: HOME ==================== -->
+        <div id="view-home" class="block">
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <!-- Elementos decorativos sofisticados -->
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-nova-orange/20 rounded-full mix-blend-screen filter blur-[120px] opacity-50"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-nova-accent/10 rounded-full mix-blend-screen filter blur-[100px] opacity-40"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row items-center gap-12">
+            
+            <!-- Text Content -->
+            <div class="flex-1 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 border border-nova-accent/30 bg-nova-accent/10 rounded-full px-4 py-1.5 mb-8 text-nova-accent font-medium text-sm">
+                    <span class="w-2 h-2 rounded-full bg-nova-accent animate-pulse"></span>
+                    A rede de fibra ótica definitiva
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-6">
+                    Performance <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">Sem Concessões.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-zinc-400 font-light mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                    Esqueça a instabilidade. Projetada para quem exige o máximo da sua conexão, do home office ao streaming em 4K.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="#planos" class="bg-white text-nova-dark text-lg font-bold px-8 py-4 rounded-full neon-glow inline-flex items-center justify-center gap-2 hover:bg-nova-accent transition-all">
+                        Ver Planos <i class="ph-bold ph-arrow-right"></i>
+                    </a>
+                    <a id="link-whatsapp-hero" href="#" class="bg-nova-surface border border-white/10 text-white text-lg font-medium px-8 py-4 rounded-full inline-flex items-center justify-center gap-2 hover:bg-white/10 transition-colors">
+                        <i class="ph-bold ph-whatsapp text-nova-accent"></i> Fale Conosco
+                    </a>
+                </div>
+            </div>
+
+            <!-- Image/Visual -->
+            <div class="flex-1 relative hidden md:block">
+                <div class="relative w-full aspect-[4/3] max-w-lg mx-auto glass-panel rounded-2xl p-2 overflow-hidden">
+                    <!-- Nova Imagem de ISP / Servidores -->
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop" alt="Infraestrutura de Servidores e Fibra Ótica" class="w-full h-full object-cover rounded-xl opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-nova-dark/80 via-transparent to-transparent"></div>
+                    
+                    <!-- Floating Badges -->
+                    <div class="absolute bottom-6 left-6 glass-panel px-4 py-2 rounded-lg border-white/10 flex items-center gap-3">
+                        <i class="ph-fill ph-rocket text-nova-accent text-2xl"></i>
+                        <div>
+                            <div class="text-xs text-zinc-400">Velocidade Média</div>
+                            <div class="font-bold">1000 Mbps</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Slider -->
+    <div class="bg-nova-surface border-y border-white/5 py-4 overflow-hidden flex whitespace-nowrap">
+        <div class="animate-marquee flex items-center gap-12 font-medium text-sm tracking-widest text-zinc-400 uppercase">
+            <span><span class="text-nova-accent">•</span> ULTRA VELOCIDADE</span>
+            <span><span class="text-nova-orange">•</span> ROTEADOR GIGABIT</span>
+            <span><span class="text-nova-accent">•</span> ESTABILIDADE MÁXIMA</span>
+            <span><span class="text-nova-orange">•</span> SUPORTE HUMANIZADO</span>
+            <span><span class="text-nova-accent">•</span> DOWNLOAD ILIMITADO</span>
+            <span><span class="text-nova-accent">•</span> ULTRA VELOCIDADE</span>
+            <span><span class="text-nova-orange">•</span> ROTEADOR GIGABIT</span>
+            <span><span class="text-nova-accent">•</span> ESTABILIDADE MÁXIMA</span>
+            <span><span class="text-nova-orange">•</span> SUPORTE HUMANIZADO</span>
+            <span><span class="text-nova-accent">•</span> DOWNLOAD ILIMITADO</span>
+        </div>
+    </div>
+
+    <!-- Pricing / Plans Section -->
+    <section id="planos" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">O plano ideal para o seu <span class="text-nova-accent">ritmo.</span></h2>
+                <p class="text-lg text-zinc-400 font-light">Transparência total. Escolha a performance que melhor se adapta a você.</p>
+            </div>
+
+            <div id="plans-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Os planos serão carregados dinamicamente via config.json -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Portal Web Section -->
+    <section id="portal" class="py-24 border-y border-white/5 relative overflow-hidden bg-nova-surface/50">
+        <!-- Background Orbs -->
+        <div class="absolute top-1/2 left-1/2 w-96 h-96 bg-nova-accent/5 rounded-full filter blur-[100px] transform -translate-y-1/2 -translate-x-1/2"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col items-center justify-center">
+                
+                <div class="text-center mb-12">
+                    <div class="text-nova-accent text-sm font-medium tracking-widest uppercase mb-3">Autoatendimento</div>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight">O controle em suas mãos.</h2>
+                </div>
+                
+                <!-- Sleek Graphic -->
+                <div class="relative w-full max-w-md flex items-center justify-center">
+                    <div class="glass-panel w-full p-8 rounded-2xl relative z-10 border-white/10 shadow-2xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-nova-accent to-nova-orange flex items-center justify-center">
+                                <i class="ph-fill ph-user text-nova-dark"></i>
+                            </div>
+                            <span class="text-xs font-medium bg-white/10 px-3 py-1 rounded-full">Dashboard</span>
+                        </div>
+                        <h3 class="text-3xl font-light mb-2">O seu espaço.<br><span class="font-bold">O seu controle.</span></h3>
+                        <p class="text-sm text-zinc-400 mb-8 font-light">Gerencie a sua rede e faturas direto do seu navegador, em qualquer dispositivo, sem precisar baixar nada.</p>
+                        
+                        <div class="space-y-3 mb-8">
+                            <div class="bg-white/5 border border-white/5 p-4 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer">
+                                <i class="ph-fill ph-receipt text-nova-accent text-xl"></i>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold">Faturas</div>
+                                    <div class="text-xs text-zinc-400">Consultar ou pagar</div>
+                                </div>
+                                
+                            </div>
+                            <div class="bg-white/5 border border-white/5 p-4 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer">
+                                <i class="ph-fill ph-wifi-high text-nova-orange text-xl"></i>
+                                <div class="flex-1">
+                                    <div class="text-sm font-bold">Diagnóstico</div>
+                                    <div class="text-xs text-zinc-400">Otimizar conexão</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a id="link-portal-web" href="#" class="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            <i class="ph-bold ph-browser text-lg"></i> Acessar Portal Web
+                        </a>
+                    </div>
+                    
+                    <!-- Decorative element behind -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-nova-orange/20 to-nova-accent/20 rounded-2xl transform rotate-3 scale-95 blur-sm z-0"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Vantagens / Diferenciais Section -->
+    <section id="vantagens" class="py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <div class="text-nova-orange text-sm font-medium tracking-widest uppercase mb-3">O Nosso DNA</div>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight">Por que somos a escolha certa.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-panel p-6 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                        <i class="ph-fill ph-rocket text-4xl text-nova-accent mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">100% Fibra Ótica</h3>
+                        <p class="text-sm text-zinc-400 font-light">Fibra de ponta a ponta. Do nosso servidor diretamente para dentro da sua casa, sem perdas no meio do caminho.</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                        <i class="ph-fill ph-headset text-4xl text-nova-orange mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Suporte Humanizado</h3>
+                        <p class="text-sm text-zinc-400 font-light">Esqueça os robôs intermináveis. Atendimento rápido e direto com a nossa equipe especializada da sua região.</p>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                        <i class="ph-fill ph-shield-check text-4xl text-nova-accent mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Sem Traffic Shaping</h3>
+                        <p class="text-sm text-zinc-400 font-light">Não limitamos a sua velocidade baseados no que você acessa. Liberdade total para downloads, jogos e streaming.</p>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                        <i class="ph-fill ph-router text-4xl text-nova-orange mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Equipamento Premium</h3>
+                        <p class="text-sm text-zinc-400 font-light">Roteadores Gigabit de alta performance em regime de comodato, garantindo máximo alcance e estabilidade.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Área de Cobertura Section -->
+        <section id="cobertura" class="py-24 relative bg-nova-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-16">
+                    <div class="text-nova-orange text-sm font-medium tracking-widest uppercase mb-3">Onde Estamos</div>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">A nossa rede de fibra.</h2>
+                    <p class="text-zinc-400 font-light max-w-2xl mx-auto">Em constante expansão. Verifique as regiões que já contam com a infraestrutura e qualidade Novanet.</p>
+                </div>
+
+                <div id="coverage-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                    <!-- Áreas de cobertura serão carregadas dinamicamente via config.json -->
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 relative">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Perguntas Frequentes</h2>
+                    <p class="text-zinc-400 font-light">Tudo o que você precisa saber antes de dar o próximo passo.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- FAQ Item 1 -->
+                    <details class="group glass-panel rounded-xl open:ring-1 open:ring-nova-accent transition-all duration-300" open>
+                        <summary class="flex items-center justify-between font-medium cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+                            <span>Em quanto tempo é feita a instalação?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down text-nova-accent"></i>
+                            </span>
+                        </summary>
+                        <div class="text-zinc-400 font-light text-sm px-6 pb-6 pt-0">
+                            Após a confirmação da viabilidade técnica e aprovação do cadastro, a nossa equipe técnica realiza a instalação no seu endereço num prazo máximo de 48 horas úteis (muitas vezes no mesmo dia!).
+                        </div>
+                    </details>
+                    
+                    <!-- FAQ Item 2 -->
+                    <details class="group glass-panel rounded-xl open:ring-1 open:ring-nova-accent transition-all duration-300">
+                        <summary class="flex items-center justify-between font-medium cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+                            <span>Os equipamentos são pagos à parte?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down text-nova-accent"></i>
+                            </span>
+                        </summary>
+                        <div class="text-zinc-400 font-light text-sm px-6 pb-6 pt-0">
+                            Não! O roteador é fornecido em regime de comodato. Isso significa que você usa sem custo adicional enquanto for nosso cliente. Em caso de defeito natural, a troca também é gratuita.
+                        </div>
+                    </details>
+
+                    <!-- FAQ Item 3 -->
+                    <details class="group glass-panel rounded-xl open:ring-1 open:ring-nova-accent transition-all duration-300">
+                        <summary class="flex items-center justify-between font-medium cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+                            <span>Existe fidelidade no contrato?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down text-nova-accent"></i>
+                            </span>
+                        </summary>
+                        <div class="text-zinc-400 font-light text-sm px-6 pb-6 pt-0">
+                            Os nossos planos promocionais, que incluem isenção da taxa de instalação, possuem uma fidelidade padrão de 12 meses. Caso prefira um plano sem fidelidade, basta consultar a nossa equipe comercial sobre a taxa de ativação.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        </div> <!-- FIM VIEW: HOME -->
+
+        <!-- ==================== VIEW: STATUS ==================== -->
+        <div id="view-status" class="hidden min-h-screen pt-24 pb-16 flex flex-col justify-center bg-nova-surface/40">
+            <!-- Status da Rede Section -->
+            <section id="status" class="relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="mb-6">
+                        <button onclick="switchView('home')" class="text-nova-accent hover:text-white transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+                            <i class="ph-bold ph-arrow-left"></i> Voltar para o início
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+                        <div>
+                            <div class="text-nova-accent text-sm font-medium tracking-widest uppercase mb-3 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-nova-accent animate-pulse"></span>
+                                Status da Rede
+                            </div>
+                            <h2 class="text-3xl font-bold tracking-tight">Transparência em tempo real.</h2>
+                        </div>
+                        <div class="text-sm text-zinc-400 font-light flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                            <i class="ph-bold ph-clock"></i> Última atualização: Hoje, 09:45
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <!-- Status Item 1 -->
+                        <div class="glass-panel p-5 rounded-xl flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">Fibra Central (Backbone)</div>
+                                <div class="text-xs text-zinc-400 mt-1">Latência normal</div>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> OK
+                            </div>
+                        </div>
+                        <!-- Status Item 2 -->
+                        <div class="glass-panel p-5 rounded-xl flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">Rotas Internacionais</div>
+                                <div class="text-xs text-zinc-400 mt-1">Peering direto ativado</div>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> OK
+                            </div>
+                        </div>
+                        <!-- Status Item 3 -->
+                        <div class="glass-panel p-5 rounded-xl flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">Portal NovaCliente</div>
+                                <div class="text-xs text-zinc-400 mt-1">Sistemas de gestão web</div>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> OK
+                            </div>
+                        </div>
+                        <!-- Status Item 4 -->
+                        <div class="glass-panel p-5 rounded-xl flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">Emissão de Faturas</div>
+                                <div class="text-xs text-zinc-400 mt-1">Gateways PIX / Cartão</div>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> OK
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manutenção Notice -->
+                    <div class="bg-nova-dark border border-white/10 rounded-xl p-5 flex items-start sm:items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-nova-orange/20 text-nova-orange flex items-center justify-center flex-shrink-0">
+                            <i class="ph-bold ph-info text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-white">Nenhuma manutenção crítica em andamento.</div>
+                            <div class="text-xs text-zinc-400 mt-1">Todos os sistemas operam dentro da normalidade. Próxima janela de manutenção preventiva: Domingo, 02:00 às 04:00 (sem impacto previsto na sua conexão).</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div> <!-- FIM VIEW: STATUS -->
+
+    </main>
+
+    <!-- Footer -->
+        <footer class="bg-nova-dark pt-20 pb-10 border-t border-white/5 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                    
+                    <!-- Brand col -->
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="mb-6">
+                            <img src="https://novanetfibra.com.br/assets/logo.png" alt="Novanet Fibra" class="h-10 md:h-12 w-auto object-contain">
+                        </div>
+                        <p class="text-zinc-400 text-sm font-light mb-8 max-w-sm leading-relaxed">
+                            Elevando o padrão de conectividade. Uma infraestrutura robusta, pensada para quem valoriza estabilidade e performance no ambiente digital atual.
+                        </p>
+                        <div class="flex gap-3">
+                            <a id="link-instagram" href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-lg text-white hover:bg-nova-orange hover:text-nova-dark transition-all"><i class="ph-fill ph-instagram-logo"></i></a>
+                            <a id="link-facebook" href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-lg text-white hover:bg-nova-accent hover:text-nova-dark transition-all"><i class="ph-fill ph-facebook-logo"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Links 1 -->
+                    <div>
+                        <h4 class="text-white font-medium text-sm mb-6 tracking-wide">Soluções</h4>
+                        <ul class="space-y-3 text-sm text-zinc-400 font-light">
+                            <li><a href="#planos" onclick="switchView('home', 'planos'); return false;" class="hover:text-nova-accent transition-colors">Planos Residenciais</a></li>
+                            <li><a href="#cobertura" onclick="switchView('home', 'cobertura'); return false;" class="hover:text-nova-accent transition-colors">Área de Cobertura</a></li>
+                            <li><a href="#" onclick="switchView('status'); return false;" class="hover:text-nova-accent transition-colors">Status da Rede</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Links 2 -->
+                    <div>
+                        <h4 class="text-white font-medium text-sm mb-6 tracking-wide">Contato</h4>
+                        <ul class="space-y-4 text-sm text-zinc-400 font-light">
+                            <li class="flex items-center gap-3"><i class="ph-fill ph-whatsapp text-nova-accent text-lg"></i> <a id="link-whatsapp-footer" href="#" class="hover:text-nova-accent transition-colors">(11) 99999-9999</a></li>
+                            <li class="flex items-center gap-3"><i class="ph-fill ph-phone text-nova-orange text-lg"></i> 0800 000 0000</li>
+                            <li class="flex items-center gap-3"><i class="ph-fill ph-envelope text-nova-accent text-lg"></i> contato@novanet.com.br</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-500 font-light text-xs">
+                    <div class="flex flex-col gap-1 text-center md:text-left">
+                        <p>&copy; 2026 Novanet Fibra. CNPJ: 63.802.749/0001-72.</p>
+                        <p>Site feito por <a href="https://linkwaveconnect.com.br" class="hover:text-nova-accent transition-colors text-zinc-400">Linkwave Connect</a>, CNPJ: 53.108.042/0001-07</p>
+                    </div>
+                    <div class="flex gap-6">
+                        <a href="#" class="hover:text-white transition-colors">Termos e Condições</a>
+                        <a href="#" class="hover:text-white transition-colors">Política de Privacidade</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Scripts -->
+        <script>
+            // --- Mobile Menu Logic ---
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                var menu = document.getElementById('mobile-menu');
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                } else {
+                    menu.classList.add('hidden');
+                }
+            });
+
+            // --- Single Page Application (SPA) View Switcher ---
+            function switchView(viewId, targetHash = null) {
+                // 1. Esconder todas as views
+                document.getElementById('view-home').classList.add('hidden');
+                document.getElementById('view-home').classList.remove('block');
+                
+                document.getElementById('view-status').classList.add('hidden');
+                document.getElementById('view-status').classList.remove('block');
+                
+                // 2. Mostrar a view selecionada
+                const view = document.getElementById('view-' + viewId);
+                if(view) {
+                    view.classList.remove('hidden');
+                    view.classList.add('block');
+                }
+
+                // 3. Lidar com o scroll
+                if (targetHash) {
+                    setTimeout(() => {
+                        const targetElement = document.getElementById(targetHash);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 50);
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                document.getElementById('mobile-menu').classList.add('hidden');
+            }
+
+            // --- Lógica Dinâmica JSON (Planos, Cobertura e Links) ---
+            async function loadDynamicContent() {
+                console.log("Iniciando busca do arquivo JSON...");
+                
+                let data = null;
+                const plansContainer = document.getElementById('plans-container');
+                const coverageContainer = document.getElementById('coverage-container');
+
+                // Função para exibir o erro na tela caso o JSON falhe
+                const showError = (motivo) => {
+                    console.error("❌ Falha ao carregar JSON. Motivo:", motivo);
+                    const errorHTML = `
+                        <div class="col-span-full w-full text-center p-8 glass-panel rounded-2xl border border-nova-orange/50 bg-nova-orange/5" style="grid-column: 1 / -1;">
+                            <i class="ph-bold ph-warning-circle text-4xl text-nova-orange mb-4 inline-block"></i>
+                            <h3 class="text-xl font-bold text-white mb-2">Informações Indisponíveis</h3>
+                            <p class="text-zinc-400">Não foi possível carregar os dados de configuração. Por favor, contate a <strong class="text-white">Linkwave Connect</strong> para suporte.</p>
+                        </div>
+                    `;
+                    if (plansContainer) plansContainer.innerHTML = errorHTML;
+                    if (coverageContainer) coverageContainer.innerHTML = errorHTML;
+                };
+
+                try {
+                    // Adiciona timestamp único à URL para garantir que nunca usa o cache do navegador
+                    const timestamp = new Date().getTime();
+                    const url = `https://novanetfibra.com.br/config.json?v=${timestamp}`;
+                    
+                    console.log("Tentando acessar a URL:", url);
+                    
+                    // Fetch simples sem headers adicionais para evitar bloqueio de CORS Preflight
+                    const response = await fetch(url);
+
+                    console.log("Resposta recebida com status HTTP:", response.status);
+
+                    if (response.ok) {
+                        data = await response.json();
+                        console.log("✅ JSON lido com sucesso!", data);
+                    } else {
+                        showError(`Status HTTP: ${response.status}`);
+                        return; 
+                    }
+                } catch (error) {
+                    showError(`Erro de rede ou CORS: ${error.message}`);
+                    return; 
+                }
+
+                if (!data) {
+                    showError("Dados retornados estão vazios.");
+                    return;
+                }
+
+                // 1. Atualizar Links
+                const safeSetAttr = (id, attr, val) => { const el = document.getElementById(id); if (el && val) el.setAttribute(attr, val); };
+                if (data.links) {
+                    safeSetAttr('link-whatsapp-hero', 'href', data.links.whatsapp);
+                    safeSetAttr('link-whatsapp-footer', 'href', data.links.whatsapp);
+                    safeSetAttr('link-portal-web', 'href', data.links.portalWeb);
+                    safeSetAttr('link-instagram', 'href', data.links.instagram);
+                    safeSetAttr('link-facebook', 'href', data.links.facebook);
+                }
+
+                // 2. Renderizar Planos
+                if (plansContainer && data.planos) {
+                    plansContainer.innerHTML = data.planos.map(plano => {
+                        const isDestaque = plano.destaque;
+                        const colorClass = plano.cor; // 'nova-accent' ou 'nova-orange'
+                        
+                        let highlightHTML = '';
+                        if (isDestaque) {
+                            highlightHTML = `
+                                <div class="absolute -top-1 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-nova-accent to-nova-orange text-nova-dark px-4 py-1 rounded-b-lg font-bold text-xs uppercase tracking-wider">
+                                    Mais Escolhido
+                                </div>
+                            `;
+                        }
+
+                        const beneficiosHTML = plano.beneficios.map(ben => `
+                            <li class="flex items-center gap-3"><i class="ph-bold ph-check text-${colorClass}"></i> ${ben}</li>
+                        `).join('');
+
+                        return `
+                            <div class="glass-panel p-8 rounded-2xl flex flex-col ${isDestaque ? `border-nova-accent/50 neon-glow transform md:-translate-y-4` : `hover:border-${colorClass}/50 transition-colors`} relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 ${isDestaque ? 'w-48 h-48' : 'w-32 h-32'} bg-${colorClass}/${isDestaque ? '20' : '10'} rounded-full filter blur-3xl ${!isDestaque ? `group-hover:bg-${colorClass}/20 transition-colors` : ''}"></div>
+                                ${highlightHTML}
+                                <div class="text-${colorClass} font-medium tracking-wide mb-2 ${isDestaque ? 'mt-4' : ''}">${plano.nome}</div>
+                                <div class="flex items-baseline gap-2 mb-6">
+                                    <span class="text-${isDestaque ? '6xl' : '5xl'} font-bold ${isDestaque ? 'text-white' : ''}">${plano.velocidade}</span>
+                                    <span class="text-xl text-${colorClass}">${plano.unidade}</span>
+                                </div>
+                                <p class="text-zinc-${isDestaque ? '300' : '400'} text-sm font-light mb-8 h-12">${plano.descricao}</p>
+                                <div class="text-${isDestaque ? '5xl' : '4xl'} font-bold mb-8 ${isDestaque ? 'text-white' : ''}">
+                                    <span class="text-xl align-top">R$</span> ${plano.precoReais}<span class="text-xl">,${plano.precoCentavos}</span><span class="text-sm text-zinc-500 font-normal">/mês</span>
+                                </div>
+                                <ul class="space-y-4 mb-10 flex-1 text-sm ${isDestaque ? 'text-zinc-100' : 'text-zinc-300'}">
+                                    ${beneficiosHTML}
+                                </ul>
+                                <a href="${plano.linkAssinar}" class="w-full py-${isDestaque ? '4' : '3'} rounded-full ${isDestaque ? 'bg-white text-nova-dark font-bold hover:bg-nova-accent' : 'border border-white/20 font-medium hover:bg-white hover:text-black'} transition-colors relative z-10 text-center block">
+                                    Assinar ${plano.nome}
+                                </a>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 3. Renderizar Área de Cobertura
+                if (coverageContainer && data.cobertura) {
+                    coverageContainer.innerHTML = data.cobertura.map(item => `
+                        <div class="glass-panel p-6 rounded-2xl text-center hover:border-${item.cor}/50 transition-colors group cursor-default">
+                            <div class="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-${item.cor}/10 transition-colors">
+                                <i class="ph-fill ph-map-pin text-2xl text-zinc-500 group-hover:text-${item.cor} transition-colors"></i>
+                            </div>
+                            <h4 class="font-bold text-white text-lg">${item.cidade}</h4>
+                            <div class="text-xs text-${item.cor} mt-1">${item.descricao}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Iniciar o carregamento quando a página é lida
+            window.addEventListener('load', loadDynamicContent);
+        </script>
+    </body>
+</html>
